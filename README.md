@@ -1,56 +1,66 @@
-# Welcome to your Expo app 👋
+# Habits
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A small, rewarding habit tracker for iOS, Android and web, built with Expo and React Native.
 
-## Get started
+Every check-in pays off with confetti, haptics and a chime. Challenges (3 → 7 → 14 → 30 days) give you something to aim for, and local reminders bring you back each day.
 
-1. Install dependencies
+## Features
 
-   ```bash
-   npm install
-   ```
+- **Two kinds of habits.** *Once a day* (check it off) or *several times* (count up to a daily goal, e.g. 8 glasses of water).
+- **Rewards on every check-in.**
+  - A step on a count habit fills the circle with a soft tap sound.
+  - Finishing a habit plays a confetti burst and a two-note chime.
+  - Finishing every habit for the day ("perfect day") rains confetti and plays a fanfare.
+- **Challenges.** Onboarding starts a 3-day challenge. Finishing one opens a full-screen trophy moment and unlocks the next length.
+- **History.** A 30-day consistency score, a 14-day chart, a trophy shelf, a day-by-day log, and a 16-week heatmap for each habit.
+- **Reminders.** A morning check-in, a nudge at each habit's chosen time, and an evening reminder if something is still open.
+  - The messages use today's real progress, e.g. "3/8 glasses so far" or "Day 2 of 3".
+  - They stop once you're done for the day.
+  - Everything is scheduled on the device; there's no server.
+- **Small on purpose.** Seven screens: Onboarding, Today, History, Manage, New Habit, Habit detail, and the challenge celebration.
 
-2. Start the app
+## Getting started
 
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **src/app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+Requires Node.js and npm.
 
 ```bash
-npm run reset-project
+npm install
+npx expo start
 ```
 
-This command will move the starter code to the **example** directory and create a blank **src/app** directory where you can start developing.
+Then open the app in Expo Go, an iOS simulator, an Android emulator, or a web browser (press `w`). Reminders work in Expo Go on iOS and Android but not on the web.
 
-### Other setup steps
+| Command | What it does |
+| --- | --- |
+| `npm start` | Start the Expo dev server (`npm run ios` / `android` / `web` to open one directly) |
+| `npm run lint` | ESLint (`eslint-config-expo`) |
+| `npx tsc --noEmit` | Typecheck |
+| `npx expo export --platform ios --output-dir /tmp/habits-export` | Full production bundle, which catches broken routes or assets the dev server only loads lazily |
+| `node scripts/generate-sounds.js` | Regenerate the reward sounds in `assets/sounds/` |
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+Add dependencies with `npx expo install <package>`, so the versions match the Expo SDK. Don't run `npm run reset-project`, which is left over from the template and would delete the app's source.
 
-## Learn more
+## Testing the challenge flow
 
-To learn more about developing your project with Expo, look at the following resources:
+In development builds, **Manage** has a **Developer** section at the bottom. It lets you:
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+- jump the current challenge to any day (choose the final day, then check in on Today to win it for real)
+- win immediately, or simulate a missed day
+- replay the trophy screen
+- send a test notification in 5 seconds and see what's scheduled
+- play each reward sound
+- reset to onboarding
 
-## Join the community
+These tools edit your real saved data and don't appear in production builds.
 
-Join our community of developers creating universal apps.
+## How it's built
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- **Expo SDK 58**, React Native 0.88, React 19, TypeScript (strict), with the React Compiler on.
+- **Expo Router** for file-based routes in `src/app/`. A root stack shows either onboarding or the `(tabs)` group, which holds Today, History and Manage.
+- **State** is one React context (`src/lib/habits-store.tsx`), saved to AsyncStorage as a single JSON blob.
+- **Logic** for streaks, challenge outcomes and stats is in plain functions (`src/lib/habits.ts`, `src/lib/dates.ts`), separate from the UI.
+- **Notifications** (`src/lib/notifications.ts`): the next week of one-off local notifications is rebuilt from live data whenever something changes or the app comes to the foreground.
+- **Animations** use Reanimated (confetti, the filling check button). Sounds use `expo-audio`, haptics `expo-haptics`, and icons `expo-symbols`.
+- **Sounds** are synthesized by a script, so there are no third-party audio files.
+
+`CLAUDE.md` has more detailed notes on the architecture and conventions.

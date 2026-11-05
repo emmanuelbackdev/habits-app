@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "claude",
+    "name": "Habits",
     "slug": "claude",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -31,6 +31,13 @@
           "backgroundColor": "#208AEF",
           "image": "./assets/images/splash-icon.png",
           "imageWidth": 76
+        }
+      ],
+      "expo-audio",
+      [
+        "expo-notifications",
+        {
+          "color": "#208AEF"
         }
       ]
     ],
